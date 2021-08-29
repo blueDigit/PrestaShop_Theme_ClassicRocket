@@ -29,6 +29,7 @@ const autoprefixer = require('autoprefixer');
 const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 
 module.exports = (env, argv) => {
     const IS_DEV = argv.mode === "development";
@@ -41,7 +42,7 @@ module.exports = (env, argv) => {
         './css/theme.scss'
     ];
     const ONLY_SASS = argv.onlysass === true;
-
+    const assetsPath = path.resolve(__dirname, '../assets');
 
     return {
         devtool: IS_DEV ? 'cheap-eval-source-map' : '',
@@ -49,7 +50,7 @@ module.exports = (env, argv) => {
             theme: ONLY_SASS ? _entrySass : _entry
         },
         output: {
-            path: path.resolve(__dirname, '../assets/js'),
+            path: path.join(assetsPath, 'js'),
             filename: '[name].js'
         },
         module: {
@@ -175,7 +176,19 @@ module.exports = (env, argv) => {
             }),
             new webpack.ProvidePlugin({
                 Popper: ['popper.js', 'default']
-            })
+            }),
+            new CleanWebpackPlugin({
+              dry: false,
+              dangerouslyAllowCleanPatternsOutsideProject: true,
+              cleanOnceBeforeBuildPatterns: [
+                path.join(assetsPath, '**/*'),
+                '!' + path.join(assetsPath, 'css'),
+                '!' + path.join(assetsPath, 'css/custom.css'),
+                '!' + path.join(assetsPath, 'css/error.css'),
+                '!' + path.join(assetsPath, 'js'),
+                '!' + path.join(assetsPath, 'js/custom.js'),
+              ],
+            }),
         ],
         watchOptions: {
             ignored: /node_modules/
