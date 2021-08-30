@@ -87,17 +87,16 @@ $(document).ready(() => {
   });
 
   $('body').on('change','#select-sort-order', function () {
-      var urlsearch = $(this).val();
-      prestashop.emit('updateFacets',urlsearch);
+    prestashop.emit('updateFacets', $(this).val());
   });
 
-  $('body').on('change', '#search_filters select', function (event) {
-      var urlsearch = $(this).val();
-    prestashop.emit('updateFacets', urlsearch);
+  $('body').on('change', '#search_filters select', function () {
+    prestashop.emit('updateFacets', $(this).val());
   });
 
   prestashop.on('updateProductList', (data) => {
     updateProductListDOM(data);
+    prestashop.emit('productListUpdated');
     window.scrollTo(0, 0);
   });
 });
@@ -111,5 +110,4 @@ function updateProductListDOM (data) {
   if (typeof(data.rendered_products_header) !== 'undefined' && data.rendered_products_header) {
       $('#js-product-list-header').replaceWith(data.rendered_products_header);
   }
-
 }
